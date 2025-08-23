@@ -12,27 +12,26 @@ clear
 close all
 clc
 
-%% UCB data
+%% Load Data
+data = readmatrix(""); %path to data, not publicly available
 
-x = [2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0,0]; %wind speed
-y = [3,16,30,44,3,16,30,44,3,16,30,44,3,16,30,44,10,18]; %moisture content
-
-z = [5.287102222,4.681643333,3.991467778,3.185613333,6.793176667,5.897227778,5.096178889,4.013197778,...
-    7.939054444,6.960813333,5.868637778,4.768638889,8.618545556,7.853122222,6.815832222,5.782282222,.45,.3]; %yield; averaged over specie and diameter
+x = data(:,1);
+y = data(:,2);
+z = data(:,3);
 
 %% validation data
 
-x_val2 = [0,0,0,3,3,0,0];
-y_val2 = [8,11.6,8.4,17,13,10,18];
+data_val = readmatrix(""); %path to data, not publicly available
 
-z_val2 = [0.529661017,0.353107345,0.423728814,2.507062147,7.838983051,0.45,0.2];
+x_val = data_val(:,1);
+y_val = data_val(:,2);
+z_val = data_val(:,3);
 
-x_val = [4,4,4,4,4,4,4,4];
-% y_val = [3,3,3,3,3,3,3,3]*0;
-y_val = [5,5,5,5,5,5,5,5];
+data_val2 = readmatrix(""); %path to data, not publicly available
 
-z_val = [3.515871959,3.867135204,6.513920152,7.188721972,3.007168725,3.467062687,6.505569232,3.270609466];
-z_val = sort(z_val);
+x_val2 = data_val2(:,1);
+y_val2 = data_val2(:,2);
+z_val2 = data_val2(:,3);
 
 %% fit the surface
 % [sf, gof, opt] = fit([x', y'],z','p00 + p10*x + p01*y + p20*x*y');%'p00 + p10*x + p01*y + p20*x^2');

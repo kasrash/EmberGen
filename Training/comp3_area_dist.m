@@ -13,7 +13,7 @@ clear all;
 close all;
 
 %% load data
-fn = 'Data_JFSP_15-01-04-4-Firebrands_Vegetative-PhaseI.xlsx';
+fn = ''; %path to data, not publicly available
 sheets = 3:16;  %3-5:LP, 6-8:CYP, 9-11:LBG, 12-14:CHAM, 15-17:PAL
 x_wind = [5.36,11.17,17.88];
 
@@ -34,7 +34,7 @@ for ii=1 : length(sheets)
 
     if ii==1
         data_tot = temp;
-    else                  %if ii==2 || ii==3 || ii==4 || ii==5 || ii==6 || ii==7 || ii==8 || ii==9 || ii==10 || ii==11 || ii==12
+    else                 
         data_tot = cat(1,data_tot,temp);
     end
 
@@ -87,11 +87,8 @@ data_grass = data_specie{3};
 data_shrub = cat(1,data_specie{4},data_specie{5});
 
 %% load validation data
-val_data = readmatrix("gollner_tot_ma.txt");
+val_data = readmatrix(""); %path to data, not publicly available
 val_A = val_data(:,1)*100;
-% val_A(val_A>300) = 0.6*val_A(val_A>300);
-val_A = 0.85*val_A;
-val_A(val_A>250) = 0.85*val_A(val_A>250);
 val_m = val_data(:,2);
 
 %% fit the power laws
@@ -104,7 +101,7 @@ e_tree = log10(data_tree(:,1)) - feval(fit_tree,log10(data_tree(:,2)));
 e_grass = log10(data_grass(:,1)) - feval(fit_grass,log10(data_grass(:,2)));
 e_shrub = log10(data_shrub(:,1)) - feval(fit_shrub,log10(data_shrub(:,2)));
 
-e_fit_tree = fitdist(e_tree,"Logistic");
+e_fit_tree = fitdist(e_tree,"Normal");
 e_fit_grass = fitdist(e_grass,"Normal");
 e_fit_shrub = fitdist(e_shrub,"Normal");
 
@@ -212,7 +209,6 @@ p1.LineWidth = 2;
 figure(2002)
 hold on
 scatter(data_grass(:,2),data_grass(:,1),'*','MarkerEdgeAlpha',1,"MarkerEdgeColor","#D95319")
-% scatter(data_grass(:,2),A_grass_pred,'s','MarkerEdgeAlpha',0.85,"MarkerEdgeColor","#7E2F8E")
 
 x = linspace(1e-4,100,1000);
 y_grass = feval(fit_grass,log10(x));

@@ -12,7 +12,7 @@ clc;
 clear all;
 
 %% load data
-fn = 'Data_JFSP_15-01-04-4-Firebrands_Vegetative-PhaseI.xlsx';
+fn = ''; %path to data, not publicly available
 sheets = 3:16;  %3-5:LP, 6-8:CYP, 9-11:LBG, 12-14:CHAM, 15-17:PAL
 x_wind = [5.36,11.17,17.88]';
 
@@ -95,17 +95,10 @@ for ww=1 : 3
         m_init = zeros(size(m));
         A_init = zeros(size(A));
         for ii=1 : length(m)
-            if ss == 2
-                [m_i,A_i,~] = D0_kasra(u_inf,delta_z,A(ii),m(ii));
-            else
-                [m_i,A_i,~] = D0_kasra(u_inf,delta_z,A(ii),m(ii));
-            end
+            [m_i,A_i,~] = D0_HMRE(u_inf,delta_z,A(ii),m(ii));
+
             m_init(ii) = m_i;
             A_init(ii) = A_i;
-        end
-        if ss==2
-            mean(m_init)
-            m_init(m_init>0.5) = 0.025;
         end
         temp_init_specie{ss} = cat(2,A_init,m_init);
     end
