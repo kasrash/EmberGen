@@ -15,8 +15,8 @@ close all;
 load("comps/comp3_final.mat")
 
 %% load the validation data
-df24 = readmatrix("data\NF_3ms_needle.csv");
-df45 = readmatrix("data\NF_0ms.csv");
+df24 = readmatrix(""); %path to data, not publicly available
+df45 = readmatrix(""); %path to data, not publicly available
 m_df24 = df24(:,2);
 m_df45 = df45(:,2);
 A_df24 = df24(:,1);
@@ -262,9 +262,6 @@ m_dist = makedist("Normal","mu",mu,"sigma",sigma);
 
 %% generate firebrands
 m_gen = dist_sampler(m_dist, m_fb);
-while length(m_gen) < 120
-    m_gen = dist_sampler(m_dist, m_fb);
-end
 
 %% calculate the area of the brands
 A_gen_final = feval(fit_tree,log10(m_gen)) + random(e_fit_tree,length(m_gen),1);
@@ -277,9 +274,6 @@ sample_sum = 0;
 index = 1;
 while sample_sum < total
     sample = random(dist,1);
-    while sample > dist.mu+2*dist.sigma || sample < dist.mu-2*dist.sigma
-        sample = random(dist,1);
-    end
     dist_data(index) = 10^sample;
     sample_sum = sum(dist_data);
     index = index+1;
