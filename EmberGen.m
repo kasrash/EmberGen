@@ -26,46 +26,48 @@ writematrix([m_gen', A_gen], outFile);
 
 %% Model Functions - do not edit
 function [m_gen, A_gen] = generation_model(u, mc, m_burn, veg)
-%% load the model components
-load("Components\comp1_final.mat");
-load("Components\comp2_final.mat");
-load("Components\comp3_final.mat");
-
 %% calculate the yield (comp1)
-yield = feval(sf,[u,mc]);
-m_fb = (yield/100) * m_burn; %total madd of firebrands
+yield = 3.45*u^0.52 - 0.067*mc + 0.8976; %based on Eq. 1 in the paper
+m_fb = (yield/100) * m_burn; %total mass of firebrands (g)
 
-%% calculate the mass distribution (comp2)
+%% calculate the mass distribution (comp2) - based on Table 2 in the paper
 if veg == "tree"
-    mu = feval(mu_t,u);
-    sigma = feval(sigma_t,u);
+    mu = 0.0216*u - 1.217;
+    sigma = 0.001*u + 0.444;
 elseif veg == "grass"
-    mu = feval(mu_g,u);
-    sigma = feval(sigma_g,u);
+    mu = 0.0114*u - 1.079;
+    sigma = -0.0021*u + 0.4;
 elseif veg == "shrub"
-    mu = feval(mu_s,u);
-    sigma = feval(sigma_s,u);
+    mu = 0.0217*u - 1.347;
+    sigma = -0.0063*u + 0.6;
 end
 
-m_dist = makedist("Normal","mu",mu,"sigma",sigma);
+m_dist = makedist("Normal","mu",mu,"sigma",sigma); % create the mass distribution
 
 %% generate firebrands
-m_gen = dist_sampler(m_dist, m_fb);
+m_gen = dist_sampler(m_dist, m_fb); % sample from the above-created mass distribution
 
-%% calculate the area of the brands
+%% calculate the area of the brands - based on Table 3 in the paper
 if veg == "tree"
-    A_gen_final = feval(fit_tree,log10(m_gen)) + random(e_fit_tree,length(m_gen),1);
+    A_gen_log = 0.56.*log10(m_gen') + 2.803 + random("Normal",0,0.136, length(m_gen),1);
 elseif veg == "grass"
-    A_gen_final = feval(fit_grass,log10(m_gen)) + random(e_fit_grass,length(m_gen),1);
+    A_gen_log = 0.311.*log10(m_gen') + 2.48 + random("Normal",0,0.136, length(m_gen),1);
 elseif veg == "shrub"
-    A_gen_final = feval(fit_shrub,log10(m_gen)) + random(e_fit_shrub,length(m_gen),1);
+    A_gen_log = 0.352.*log10(m_gen') + 2.75 + random("Normal",0,0.228, length(m_gen),1);
 end
 
-A_gen = 10.^A_gen_final;
+A_gen = 10.^A_gen_log; % convert to non-log scale
 
 end
 
 function dist_data = dist_sampler(dist, total)
+% function to sample from distribution until the toal samples mass reaches the
+% total mass.
+% dist: a distribution to sample from
+% total: total mass of the firebrands as determined from Component 1
+% dis_data: realizations of firebrands mass as sampled from the
+% distribution
+%%%%%
 sample_sum = 0;
 index = 1;
 while sample_sum < total
